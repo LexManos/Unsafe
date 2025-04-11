@@ -11,7 +11,8 @@ import java.util.function.Consumer;
 
 import sun.misc.Unsafe;
 
-public class UnsafeHacks {
+@SuppressWarnings("deprecation")
+public final class UnsafeHacks {
     private static final Unsafe UNSAFE = getUnsafe();
     @SuppressWarnings("rawtypes")
     private static final UnsafeFieldAccess<Class, Object> module = findField(Class.class, "module");
@@ -25,7 +26,7 @@ public class UnsafeHacks {
         }
     }
 
-    public static <T> T getField(Field field, Object instance) {
+	public static <T> T getField(Field field, Object instance) {
         return cast(UNSAFE.getObject(instance, UNSAFE.objectFieldOffset(field)));
     }
 
@@ -140,6 +141,5 @@ public class UnsafeHacks {
         return (T)inst;
     }
 
-    //TODO: [Unsafe] Add module-info.java using https://github.com/beryx/badass-jar-plugin So that modular projects that consume us can get proper encapsulation and we mark that we need jdk.unsupported
     //TODO: [Unsafe] Expand API to facilitate better Whitebox testing, addOpens(Module closed, Module reader), get/invoke methods?
 }

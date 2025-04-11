@@ -1,5 +1,5 @@
 #eclipse
-/bin
+**/bin
 .settings
 .classpath
 *.project
@@ -17,8 +17,8 @@
 !ide/**
 
 #gradle
-/build
-/.gradle
+**/build
+**/.gradle
 
 # Test Builds
 /repo/

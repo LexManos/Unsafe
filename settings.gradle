@@ -13,13 +13,21 @@ plugins {
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-			version('junit', '5.10.0')
-			library('junit-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit')
-			library('junit-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit')
-			library('junit-platform-launcher', 'org.junit.platform:junit-platform-launcher:1.10.0')
-			bundle('junit-runtime', ['junit-engine', 'junit-platform-launcher']) // Force Gradle to load the JUnit Platform Launcher from the module-path
+
+            plugin('license', 'net.minecraftforge.licenser').version('1.0.1')
+            plugin('gradleutils', 'net.minecraftforge.gradleutils').version('2.0.11')
+        plugin('versions', 'com.github.ben-manes.versions').version('0.52.0')
+
+      version('junit', '5.10.0')
+      library('junit-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit')
+      library('junit-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit')
+      library('junit-platform-launcher', 'org.junit.platform:junit-platform-launcher:1.10.0')
+      bundle('junit-runtime', ['junit-engine', 'junit-platform-launcher']) // Force Gradle to load the JUnit Platform Launcher from the module-path
         }
     }
 }
 
 rootProject.name = 'unsafe'
+
+include('unsafe-java9')
+include('unsafe-java24')

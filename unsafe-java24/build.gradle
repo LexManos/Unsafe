@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    alias libs.plugins.license
+    alias libs.plugins.versions
+}
+
+group = 'net.minecraftforge'
+version = rootProject.version
+
+license {
+    header rootProject.file('LICENSE-header.txt')
+    newLine false
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(24)
+    withSourcesJar()
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs += ['--add-opens', 'java.base/java.lang.invoke=net.minecraftforge.unsafe']
+    //jvmArgs += ['--add-opens', 'java.base/java.lang=ALL-UNNAMED']
+}
+
+dependencies {
+  // This doesnt work due to circular dependencies, I need to make the root project's jar task
+  // not depend on these sub-projects. So that they in turn can depend on the root project.
+  // For now im ignoring this issue because Unsafe is so tiny I just have to re-implement 2 classes.
+  // But ideally this would be possible. And I think it can be done by having the root project
+  // expose the 'thin' jar instead of the published multi-release jar. Somehow.
+  //implementation rootProject
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
+}
+
+repositories {
+    mavenCentral()
+}

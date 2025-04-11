@@ -1,10 +1,9 @@
 plugins {
-    id 'org.cadixdev.licenser' version '0.6.1'
     id 'maven-publish'
-    id 'java'
     id 'java-library'
-    id 'eclipse'
-    id 'net.minecraftforge.gradleutils' version '2.0.11'
+    alias libs.plugins.license
+    alias libs.plugins.gradleutils
+    alias libs.plugins.versions
 }
 
 group = 'net.minecraftforge'
@@ -12,9 +11,10 @@ group = 'net.minecraftforge'
 version = gradleutils.tagOffsetVersion
 println('Version: ' + version)
 
+evaluationDependsOnChildren()
+
 license {
     header project.file('LICENSE-header.txt')
-    include 'net/minecraftforge/**/*.java'
     newLine false
 }
 
@@ -44,17 +44,18 @@ if (project.hasProperty('javaVendor') && project.hasProperty('javaVersion')) {
         main = 'groovy.ui.GroovyMain'
         args 'aggregate-junit-tests.groovy'
     }
-    
+    def SUPPORTED = (8..24)
+	SUPPORTED = [8, 11, 16, 17, 21, 24] // LTS and MC Targets Only
     def VALID_VMS = [
-        'Adoptium':  [8, 11,     16, 17, 18, 19, 20, 21],
-        'Amazon':    [8, 11, 15, 16, 17, 18, 19, 20, 21],
-        'Azul':      (8..21),
-        'BellSoft':  [8] + (11..21),
-        'Graal_VM':  [8, 11,     16, 17,     19, 20, 21],
-        'IBM':       [8, 11,     16, 17, 18, 19, 20    ],
-        'Microsoft': [   11,     16, 17,             21],
-        'Oracle':    (8..21),
-        'SAP':       (11..20)
+        'Adoptium':  SUPPORTED - [   9, 10, 12, 13, 14, 15],
+        'Amazon':    SUPPORTED - [   9, 10, 12, 13, 14],
+        'Azul':      SUPPORTED,
+        'BellSoft':  SUPPORTED - [   9, 10],
+        'Graal_VM':  SUPPORTED - [8, 9, 10,     12, 13, 14, 15, 16, 17, 18,             24],
+        'IBM':       SUPPORTED - [8, 9, 10, 11, 12, 13, 14, 15, 16, 17,             21, 24],
+        'Microsoft': SUPPORTED - [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,     24],
+        'Oracle':    SUPPORTED - [8,        11,                 16, 17,             21, 24],
+        'SAP':       SUPPORTED - [8, 9, 10, 11,                 16, 17,             21, 24]
     ]
     VALID_VMS.each { javaVendor, javaVersions ->
         javaVersions.each { javaVersion ->
@@ -83,10 +84,24 @@ java {
     withSourcesJar()
 }
 
+def unsafeJava9 = project(':unsafe-java9')
+def unsafeJava24 = project(':unsafe-java24')
+
 jar {
+	dependsOn unsafeJava9.tasks.compileJava
+    from(unsafeJava9.sourceSets.main.output) {
+    	include '**/module-info.class'
+    }
+    
+	dependsOn unsafeJava24.tasks.compileJava
+    from(unsafeJava24.sourceSets.main.output) {
+    	into '/META-INF/versions/24/'
+    }
+	
     manifest {
         attributes([
-            'Automatic-Module-Name': 'net.minecraftforge.unsafe'
+            'Automatic-Module-Name': 'net.minecraftforge.unsafe',
+            'Multi-Release': 'true'
         ] as LinkedHashMap)
         attributes([
             'Specification-Title':    'unsafe',

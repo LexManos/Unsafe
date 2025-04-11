@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+    alias libs.plugins.license
+}
+
+group = 'net.minecraftforge'
+version = rootProject.version
+
+license {
+    header rootProject.file('LICENSE-header.txt')
+    newLine false
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(9)
+}
+
+repositories {
+    mavenCentral()
+}

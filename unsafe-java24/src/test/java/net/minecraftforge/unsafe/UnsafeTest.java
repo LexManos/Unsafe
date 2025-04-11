@@ -4,27 +4,19 @@
  */
 package net.minecraftforge.unsafe;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 public class UnsafeTest {
     @Test
-    public void canGetUnsafe() {
-        assertNotNull(UnsafeHacks.theUnsafe());
-    }
-
-    @Test
     public void canSetPrivate() {
-        List<?> arr = Arrays.asList();
+        var arr = Arrays.asList();
 
         @SuppressWarnings("unchecked")
-        UnsafeFieldAccess<List<?>, Object[]> accessor = UnsafeHacks.findField((Class<List<?>>)arr.getClass(), "a");
+        var accessor = UnsafeHacks.<List<?>, Object[]>findField((Class<List<?>>)arr.getClass(), "a");
 
         assertNotNull(accessor, "Failed to find ArrayList.a");
         assertTrue(arr.isEmpty(), "New ArrayList was not empty");
@@ -36,16 +28,16 @@ public class UnsafeTest {
 
     @Test
     public void canGetPrivate() {
-        Object value = new Object();
-        List<?> arr = Arrays.asList(value);
+        var value = new Object();
+        var arr = Arrays.asList(value);
 
         @SuppressWarnings("unchecked")
-        UnsafeFieldAccess<List<?>, Object[]> accessor = UnsafeHacks.findField((Class<List<?>>)arr.getClass(), "a");
+        var accessor = UnsafeHacks.<List<?>, Object[]>findField((Class<List<?>>)arr.getClass(), "a");
 
         assertNotNull(accessor, "Failed to find ArrayList.a");
         assertEquals(1, arr.size(), "New ArrayList size");
 
-        Object[] internal = accessor.get(arr);
+        var internal = accessor.get(arr);
         assertNotNull(internal, "Failed to get internal value");
         assertEquals(1, internal.length, "Internal value wrong size");
         assertEquals(value, internal[0], "Invalid internal value[0]");
